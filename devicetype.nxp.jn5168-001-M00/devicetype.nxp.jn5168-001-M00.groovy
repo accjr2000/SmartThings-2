@@ -3,6 +3,8 @@ metadata {
 	// Automatically generated. Make future change here.
 	definition (name: "NXP module", namespace: "jdeltoft", author: "Justin Eltoft") {
 		capability "Motion Sensor"
+		capability "Refresh"
+		capability "Configuration"
 
 		fingerprint profileId: "0104", deviceId:"0x0107", inClusters: "0000,0003,0406", outClusters: "0003"
 	}
@@ -22,7 +24,7 @@ metadata {
 			state "default", action:"refresh.refresh", icon:"st.secondary.refresh"
 		}
         
-        standardTile("Configure", "device.configure", inactiveLabel: false, decoration: "flat") {
+        standardTile("configure", "device.configure", inactiveLabel: false, decoration: "flat") {
 			state "default", action:"configure", icon:"st.secondary.refresh"
 		}
 
