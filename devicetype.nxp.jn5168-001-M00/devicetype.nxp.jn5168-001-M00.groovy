@@ -1,9 +1,8 @@
-
 metadata {
 	// Automatically generated. Make future change here.
 	definition (name: "NXP module", namespace: "jdeltoft", author: "Justin Eltoft") {
 		capability "Motion Sensor"
-		capability "Refresh"
+       	capability "Refresh"
 		capability "Configuration"
 
 		fingerprint profileId: "0104", deviceId:"0x0107", inClusters: "0000,0003,0406", outClusters: "0003"
@@ -24,13 +23,13 @@ metadata {
 			state "default", action:"refresh.refresh", icon:"st.secondary.refresh"
 		}
         
-        standardTile("configure", "device.configure", inactiveLabel: false, decoration: "flat") {
-			state "default", action:"configure", icon:"st.secondary.refresh"
+        standardTile("configure", "device.motion", inactiveLabel: false, decoration: "flat") {
+			state "configure", action:"configuration.configure", icon:"st.secondary.configure"
 		}
 
 
 		main "motion"
-  		details(["motion","refresh","Configure"])
+  		details(["motion","refresh","configure"])
 	}
 }
 
@@ -47,11 +46,10 @@ def refresh()
 }
 
 def configure() {
-
-	String zigbeeId = swapEndianHex(device.hub.zigbeeId)
 	log.debug "JDE: Configuring bindings."
+	String zigbeeId = swapEndianHex(device.hub.zigbeeId)
 	def configCmds = [
-     	"zdo bind 0x${device.deviceNetworkId} 1 1 0x406 {${device.zigbeeId}} {}"
+         	"zdo bind 0x${device.deviceNetworkId} 1 1 0x406 {${device.zigbeeId}} {}"
 	]
     return configCmds + refresh() // send refresh cmds as part of config
 }
