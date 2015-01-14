@@ -1,14 +1,13 @@
-
 /**
- *  Generic Z-Wave Water Sensor
+ *  Generic Z-Wave ~Water Sensor
  *
  *  Author: SmartThings
- *  Date: 2013-03-05
+ *  Date: 2013-03-05 (updated 12/26/14 by JDE)
  */
 
 metadata {
 	// Automatically generated. Make future change here.
-	definition (name: "Z-Wave Water Sensor", namespace: "smartthings", author: "SmartThings") {
+	definition (name: "Z-Wave ~Water Sensor", namespace: "jdeltoft", author: "Justin Eltoft") {
 		capability "Water Sensor"
 		capability "Sensor"
 		capability "Battery"
@@ -17,8 +16,8 @@ metadata {
 	}
 
 	simulator {
-		status "dry": "command: 3003, payload: 00"
-		status "wet": "command: 3003, payload: FF"
+		status "wet": "command: 3003, payload: 00"
+		status "dry": "command: 3003, payload: FF"
 	}
 	
 	tiles {
@@ -40,7 +39,8 @@ def parse(String description) {
 	if (description.startsWith("Err")) {
 	    result = createEvent(descriptionText:description)
 	} else {
-		def cmd = zwave.parse(description, [0x20: 1, 0x30: 1, 0x31: 5, 0x80: 1, 0x84: 1, 0x71: 3, 0x9C: 1])
+		def cmd = zwave.parse(description, [0x20: 1, 0x30: 1, 0x31: 5, 0x80: 1, 0x84: 1, 0x71: 1/* was 3 */, 0x9C: 1])
+
 		if (cmd) {
 			result = zwaveEvent(cmd)
 		} else {
@@ -51,7 +51,7 @@ def parse(String description) {
 }
 
 def sensorValueEvent(Short value) {
-	def eventValue = value ? "wet" : "dry"
+	def eventValue = value ? "dry" : "wet"
 	createEvent(name: "water", value: eventValue, descriptionText: "$device.displayName is $eventValue")
 }
 
@@ -78,6 +78,11 @@ def zwaveEvent(physicalgraph.zwave.commands.sensorbinaryv1.SensorBinaryReport cm
 def zwaveEvent(physicalgraph.zwave.commands.sensoralarmv1.SensorAlarmReport cmd)
 {
 	sensorValueEvent(cmd.sensorState)
+}
+
+def zwaveEvent(physicalgraph.zwave.commands.alarmv1.AlarmReport cmd)
+{
+	sensorValueEvent(cmd.alarmLevel)
 }
 
 def zwaveEvent(physicalgraph.zwave.commands.notificationv3.NotificationReport cmd)
